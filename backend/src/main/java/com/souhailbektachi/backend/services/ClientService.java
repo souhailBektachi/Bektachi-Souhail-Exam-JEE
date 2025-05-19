@@ -24,4 +24,10 @@ public interface ClientService {
     List<ClientSummaryDTO> searchClientsByName(String keyword);
     
     List<ClientSummaryDTO> searchClientsByEmail(String email);
+
+    /**
+     * Count total number of clients.
+     * @return Total number of clients.
+     */
+    long countClients();
 }

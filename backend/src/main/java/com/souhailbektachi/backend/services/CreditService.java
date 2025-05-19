@@ -134,4 +134,16 @@ public interface CreditService {
      * @return List of credits within the specified date range
      */
     List<CreditSummaryDTO> searchCreditsByDateRange(LocalDate startDate, LocalDate endDate);
+
+    /**
+     * Count total number of credits.
+     * @return Total number of credits.
+     */
+    long countCredits();
+
+    /**
+     * Get a summary of credits by status.
+     * @return A map where keys are credit statuses and values are counts.
+     */
+    Map<StatutCredit, Long> getCreditStatusSummary();
 }

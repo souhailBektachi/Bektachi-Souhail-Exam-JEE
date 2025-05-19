@@ -1,21 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, tap, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../../environments/environment';
+import { LoginRequest, AuthResponse } from '../models/auth.model'; // Adjust path as needed
 
 export interface User {
   id?: number;
   username: string;
   role: string;
   token?: string;
-}
-
-export interface LoginRequest {
-  username: string;
-  password: string;
 }
 
 export interface RegisterRequest {
@@ -25,23 +21,27 @@ export interface RegisterRequest {
   fullName: string;
 }
 
-export interface AuthResponse {
-  token: string;
-  tokenType: string;
-  username: string;
-  role: string;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/api/auth`;
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  private currentUserSubject: BehaviorSubject<AuthResponse | null>; // For storing current user info
   public currentUser$ = this.currentUserSubject.asObservable();
   private jwtHelper = new JwtHelperService();
+  private loggedInStatus = false; // Simple flag for logged-in state
+  private authTokenKey = 'authToken';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+    // Check for existing token on service initialization
+    this.loggedInStatus = !!localStorage.getItem(this.authTokenKey);
+    const token = localStorage.getItem(this.authTokenKey);
+    
+    this.currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
+    if (token) {
+        this.currentUserSubject.next({ token } as AuthResponse); // Partial, needs more user info
+    }
+  }
 
   login(credentials: LoginRequest): Observable<User> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
@@ -103,7 +103,17 @@ export class AuthService {
     return currentUser.role === role;
   }
 
+  isLoggedIn(): boolean {
+    // Check if token exists and is not expired (add expiry check if applicable)
+    const token = localStorage.getItem(this.authTokenKey);
+    return !!token; // More robust check: return !!this.currentUserSubject.value && !!this.currentUserSubject.value.token;
+  }
+
   getToken(): string | null {
     return localStorage.getItem('auth_token');
+  }
+
+  getCurrentUser(): Observable<AuthResponse | null> {
+    return this.currentUserSubject.asObservable();
   }
 }

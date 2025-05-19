@@ -2,12 +2,10 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../services/auth.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
-  const toastr = inject(ToastrService);
   const authService = inject(AuthService);
   
   return next(req).pipe(
@@ -15,17 +13,17 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.status === 401) {
         // Auto logout if 401 response returned from API
         authService.logout();
-        toastr.error('Your session has expired. Please log in again.', 'Authentication Error');
+        console.error('Your session has expired. Please log in again.');
         router.navigate(['/auth/login']);
       } else if (error.status === 403) {
-        toastr.error('You do not have permission to perform this action', 'Access Denied');
+        console.error('You do not have permission to perform this action');
         router.navigate(['/dashboard']);
       } else if (error.status === 500) {
-        toastr.error('An unexpected error occurred. Please try again later.', 'Server Error');
+        console.error('An unexpected error occurred. Please try again later.');
       } else {
         // Show error message
         const errorMessage = error.error?.message || error.message || 'An error occurred';
-        toastr.error(errorMessage, 'Error');
+        console.error(errorMessage);
       }
       
       return throwError(() => error);

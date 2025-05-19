@@ -15,16 +15,8 @@ module.exports = {
           DEFAULT: '#f50057',
           light: '#ff5983',
           dark: '#bb002f',
-        },
-        accent: {
-          DEFAULT: '#ff4081',
-          light: '#ff79b0',
-          dark: '#c60055',
-        },
-      },
-      fontFamily: {
-        sans: ['Roboto', 'Helvetica', 'Arial', 'sans-serif'],
-      },
+        }
+      }
     },
   },
   plugins: [
