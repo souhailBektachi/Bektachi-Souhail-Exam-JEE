@@ -338,6 +338,14 @@ public class CreditServiceImpl implements CreditService {
         // return creditRepository.countCreditsByStatus();
     }
     
+    @Override
+    public long countCredits() {
+        // This assumes your CreditRepository has a count() method (standard in JpaRepository)
+        return creditRepository.count();
+        // Placeholder implementation:
+        // return 0L; // Replace with actual repository call
+    }
+    
     // Helper methods
     
     private Credit findCreditOrThrow(Long id) {
