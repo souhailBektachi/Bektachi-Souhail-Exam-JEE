@@ -4,16 +4,22 @@ import com.souhailbektachi.backend.entities.*;
 import com.souhailbektachi.backend.repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 public class DataInitializer {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     @Profile("!prod")
@@ -128,6 +134,53 @@ public class DataInitializer {
             remboursementRepository.save(remb7);
             
             System.out.println("Test data initialization completed!");
+        };
+    }
+
+    @Bean
+    public CommandLineRunner initializeUsers() {
+        return args -> {
+            // Only create default users if the database is empty
+            if (userRepository.count() == 0) {
+                log.info("Initializing default users...");
+                
+                // Create Admin user
+                User adminUser = new User();
+                adminUser.setUsername("admin");
+                adminUser.setPassword(passwordEncoder.encode("admin123"));
+                adminUser.setEmail("admin@example.com");
+                adminUser.setFullName("System Administrator");
+                adminUser.setRole(Role.ROLE_ADMIN);
+                adminUser.setEnabled(true);
+                userRepository.save(adminUser);
+                log.info("Created admin user: {}", adminUser.getUsername());
+                
+                // Create Employee user
+                User employeeUser = new User();
+                employeeUser.setUsername("employe");
+                employeeUser.setPassword(passwordEncoder.encode("employe123"));
+                employeeUser.setEmail("employe@example.com");
+                employeeUser.setFullName("Bank Employee");
+                employeeUser.setRole(Role.ROLE_EMPLOYE);
+                employeeUser.setEnabled(true);
+                userRepository.save(employeeUser);
+                log.info("Created employee user: {}", employeeUser.getUsername());
+                
+                // Create Client user
+                User clientUser = new User();
+                clientUser.setUsername("client");
+                clientUser.setPassword(passwordEncoder.encode("client123"));
+                clientUser.setEmail("client@example.com");
+                clientUser.setFullName("Default Client");
+                clientUser.setRole(Role.ROLE_CLIENT);
+                clientUser.setEnabled(true);
+                userRepository.save(clientUser);
+                log.info("Created client user: {}", clientUser.getUsername());
+                
+                log.info("Default users initialized successfully!");
+            } else {
+                log.info("Users already exist in the database. Skipping initialization.");
+            }
         };
     }
 }
