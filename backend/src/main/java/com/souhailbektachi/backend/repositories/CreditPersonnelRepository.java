@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CreditPersonnelRepository extends JpaRepository<CreditPersonnel, Long> {
-    // You can add custom query methods here
 }
