@@ -322,6 +322,22 @@ public class CreditServiceImpl implements CreditService {
         return creditMapper.toSummaryDtoList(credits);
     }
     
+    @Override
+    public Map<StatutCredit, Long> getCreditStatusSummary() {
+        // This is a placeholder implementation.
+        // You'll need to replace this with actual logic using your CreditRepository.
+        // Example using a stream if you fetch all credits:
+        /*
+        return creditRepository.findAll().stream()
+                .collect(Collectors.groupingBy(Credit::getStatut, Collectors.counting()));
+        */
+        // Placeholder returning an empty map or a map with default zero counts:
+        return Arrays.stream(StatutCredit.values())
+                .collect(Collectors.toMap(status -> status, status -> 0L));
+        // Or, if your repository has a dedicated query method:
+        // return creditRepository.countCreditsByStatus();
+    }
+    
     // Helper methods
     
     private Credit findCreditOrThrow(Long id) {

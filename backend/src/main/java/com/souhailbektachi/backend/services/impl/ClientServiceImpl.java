@@ -121,6 +121,11 @@ public class ClientServiceImpl implements ClientService {
         List<Client> clients = clientRepository.findByEmailContainingIgnoreCase(email);
         return clientMapper.toSummaryDtoList(clients);
     }
+
+    @Override
+    public long countClients() {
+        return clientRepository.count();
+    }
     
     // Helper methods
     
