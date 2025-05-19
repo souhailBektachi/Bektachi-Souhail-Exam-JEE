@@ -1,6 +1,7 @@
 export interface Client {
-  id: number; // Changed from Long to number for TypeScript
+  id: number;
   nom: string;
+  prenom: string;
   email: string;
   nombreCredits: number;
 }

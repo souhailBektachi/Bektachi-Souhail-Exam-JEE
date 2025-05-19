@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -6,17 +7,37 @@ export const routes: Routes = [
     loadChildren: () => import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
   },
   {
+    path: 'dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'clients',
-    loadChildren: () => import('./features/clients/client.routes').then(m => m.CLIENT_ROUTES)
-    // canActivate: [AuthGuard] // Example: If you have an AuthGuard
+    loadChildren: () => import('./features/clients/client.routes').then(m => m.CLIENT_ROUTES),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'credits',
+    loadChildren: () => import('./features/credits/credits.module').then(m => m.CreditsModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'remboursements',
+    loadChildren: () => import('./features/remboursements/remboursements.module').then(m => m.RemboursementsModule),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.module').then(m => m.AdminModule),
+    canActivate: [AuthGuard]
   },
   {
     path: '',
-    redirectTo: '/auth/login', // Or '/clients' if you want to default to client list after login
+    redirectTo: '/dashboard',
     pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: '/auth/login' // Or a 404 component
+    redirectTo: '/auth/login'
   }
 ];

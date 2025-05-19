@@ -1,0 +1,189 @@
+<div class="min-h-screen bg-gray-100">
+  <nav class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex">
+          <div class="flex-shrink-0 flex items-center">
+            <h1 class="text-xl font-bold text-indigo-600">Credit Management</h1>
+          </div>
+          <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+            <a routerLink="/dashboard" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Dashboard
+            </a>
+            <a routerLink="/credits" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Credits
+            </a>
+            <a routerLink="/clients" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Clients
+            </a>
+            <a routerLink="/remboursements" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Remboursements
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+      <div class="flex items-center mb-6">
+        <button (click)="goBack()" class="mr-4 flex items-center text-sm text-indigo-600 hover:text-indigo-900">
+          <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back to Credits
+        </button>
+        <h2 class="text-2xl font-semibold text-gray-900">Create New Credit</h2>
+      </div>
+
+      <div *ngIf="error" class="bg-red-50 p-4 rounded-md mb-6">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Error submitting credit application</h3>
+            <div class="mt-2 text-sm text-red-700">
+              <p>{{ error }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
+        <div class="md:grid md:grid-cols-3 md:gap-6">
+          <div class="md:col-span-1">
+            <h3 class="text-lg font-medium leading-6 text-gray-900">Credit Information</h3>
+            <p class="mt-1 text-sm text-gray-500">
+              Please fill out the information for the new credit application.
+            </p>
+          </div>
+          <div class="mt-5 md:mt-0 md:col-span-2">
+            <form [formGroup]="creditForm" (ngSubmit)="onSubmit()">
+              <div class="grid grid-cols-6 gap-6">
+                <div class="col-span-6 sm:col-span-3">
+                  <label for="creditType" class="block text-sm font-medium text-gray-700">Credit Type</label>
+                  <select 
+                    id="creditType" 
+                    formControlName="type" 
+                    (change)="onCreditTypeChange()"
+                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="" disabled>Select credit type</option>
+                    <option value="PERSONNEL">Personal</option>
+                    <option value="IMMOBILIER">Real Estate</option>
+                    <option value="PROFESSIONNEL">Professional</option>
+                  </select>
+                  <div *ngIf="submitted && f['type'].errors" class="text-red-500 mt-1 text-sm">
+                    <span *ngIf="f['type'].errors['required']">Credit type is required</span>
+                  </div>
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                  <label for="clientId" class="block text-sm font-medium text-gray-700">Client</label>
+                  <select 
+                    id="clientId" 
+                    formControlName="clientId"
+                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="" disabled>Select client</option>
+                    <option *ngFor="let client of clients" [value]="client.id">{{ client.nom }} {{ client.prenom }}</option>
+                  </select>
+                  <div *ngIf="submitted && f['clientId'].errors" class="text-red-500 mt-1 text-sm">
+                    <span *ngIf="f['clientId'].errors['required']">Client is required</span>
+                  </div>
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                  <label for="montant" class="block text-sm font-medium text-gray-700">Amount (€)</label>
+                  <input 
+                    type="number" 
+                    id="montant" 
+                    formControlName="montant" 
+                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <div *ngIf="submitted && f['montant'].errors" class="text-red-500 mt-1 text-sm">
+                    <span *ngIf="f['montant'].errors['required']">Amount is required</span>
+                    <span *ngIf="f['montant'].errors['min']">Amount must be greater than 0</span>
+                  </div>
+                </div>
+
+                <div class="col-span-6 sm:col-span-3">
+                  <label for="dureeRemboursement" class="block text-sm font-medium text-gray-700">Duration (months)</label>
+                  <input 
+                    type="number" 
+                    id="dureeRemboursement" 
+                    formControlName="dureeRemboursement" 
+                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <div *ngIf="submitted && f['dureeRemboursement'].errors" class="text-red-500 mt-1 text-sm">
+                    <span *ngIf="f['dureeRemboursement'].errors['required']">Duration is required</span>
+                    <span *ngIf="f['dureeRemboursement'].errors['min']">Duration must be at least 1 month</span>
+                    <span *ngIf="f['dureeRemboursement'].errors['max']">Duration cannot exceed 360 months</span>
+                  </div>
+                </div>
+
+                <!-- Personal Credit specific fields -->
+                <div *ngIf="selectedCreditType === 'PERSONNEL'" class="col-span-6">
+                  <label for="motif" class="block text-sm font-medium text-gray-700">Motive</label>
+                  <input 
+                    type="text" 
+                    id="motif" 
+                    formControlName="motif" 
+                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <div *ngIf="submitted && f['motif'] && f['motif'].errors && f['motif'].errors['required']" class="text-red-500 mt-1 text-sm">
+                    <span>Motive is required for personal credits</span>
+                  </div>
+                </div>
+
+                <!-- Real Estate Credit specific fields -->
+                <div *ngIf="selectedCreditType === 'IMMOBILIER'" class="col-span-6">
+                  <label for="typeBienFinance" class="block text-sm font-medium text-gray-700">Property Type</label>
+                  <select 
+                    id="typeBienFinance" 
+                    formControlName="typeBienFinance"
+                    class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <option value="" disabled>Select property type</option>
+                    <option value="APPARTEMENT">Apartment</option>
+                    <option value="MAISON">House</option>
+                    <option value="TERRAIN">Land</option>
+                    <option value="LOCAL_COMMERCIAL">Commercial Property</option>
+                  </select>
+                  <div *ngIf="submitted && f['typeBienFinance'] && f['typeBienFinance'].errors && f['typeBienFinance'].errors['required']" class="text-red-500 mt-1 text-sm">
+                    <span>Property type is required for real estate credits</span>
+                  </div>
+                </div>
+
+                <!-- Professional Credit specific fields -->
+                <div *ngIf="selectedCreditType === 'PROFESSIONNEL'" class="col-span-6">
+                  <label for="raisonSocialeEntreprise" class="block text-sm font-medium text-gray-700">Company Name</label>
+                  <input 
+                    type="text" 
+                    id="raisonSocialeEntreprise" 
+                    formControlName="raisonSocialeEntreprise" 
+                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                  <div *ngIf="submitted && f['raisonSocialeEntreprise'] && f['raisonSocialeEntreprise'].errors && f['raisonSocialeEntreprise'].errors['required']" class="text-red-500 mt-1 text-sm">
+                    <span>Company name is required for professional credits</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="mt-8 flex justify-end">
+                <button 
+                  type="button" 
+                  (click)="goBack()" 
+                  class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Create Credit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
